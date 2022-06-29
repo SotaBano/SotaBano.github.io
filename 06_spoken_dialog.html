@@ -25,7 +25,12 @@ var response = {
     "あなたは誰ですか":"わたしはアレクサではありません",
     "何歳ですか":"え、わたし、何歳にみえますか",
     "元気ですか":"元気ですよー",
-    "好きな食べ物は":"焼肉です"
+    "好きな食べ物は":"焼肉です",
+		"和歌山の天気": ["和歌山県の天気予報を表示します", "https:…"],
+		"大阪の天気": ["大阪府の天気予報を表示します", "https:…"],
+		"京都の天気": ["京都府の天気予報を表示します", "https:…"],
+		"奈良の天気": ["奈良県の天気予報を表示します", "https:…"],
+		"兵庫の天気": ["兵庫県の天気予報を表示します", "https:…"]
 };
 
 // ウエイクワードの定義
@@ -71,18 +76,27 @@ asr.onresult = function(event){
 
         if(new RegExp(wake_word).test(transcript_previous)){
             asr.abort(); // 音声認識を停止
+					let ret = response[transcript];
 	        let answer = response[transcript];
 
+						let answer;
+            let webpage;
+						
             if(typeof answer == 'undefined'){
 	            answer = "ごめんなさい。わかりません。";
-    	    }
-
+    	    }else{
+								answer = ret[0];
+                webpage = ret[1];
+						}
             output += transcript + ' => ' + answer + '<br>';
 
 	        tts.text = answer;
 	        // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	        tts.onend = function(event){
 	            asr.start(); // 音声認識を再開
+							if(typeof webpage != 'undefined’){
+									location.href = webpage;
+									} 
 	        }
 
 	        speechSynthesis.speak(tts); // 再生
