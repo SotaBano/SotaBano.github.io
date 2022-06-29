@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<h1>履歴の利用（ウエイクワード「OK コンピューター」）</h1>
+<h1>音声認識課題</h1>
 
 <p>
 <button id="startButton">start</button>
@@ -22,15 +22,19 @@
 <script>
 // 応答の定義（ハッシュ）    
 var response = {
-    "あなたは誰ですか":"わたしはアレクサではありません",
-    "何歳ですか":"え、わたし、何歳にみえますか",
-    "元気ですか":"元気ですよー",
-    "好きな食べ物は":"焼肉です",
-		"和歌山の天気": ["和歌山県の天気予報を表示します", "https:…"],
-		"大阪の天気": ["大阪府の天気予報を表示します", "https:…"],
-		"京都の天気": ["京都府の天気予報を表示します", "https:…"],
-		"奈良の天気": ["奈良県の天気予報を表示します", "https:…"],
-		"兵庫の天気": ["兵庫県の天気予報を表示します", "https:…"]
+    "あなた,誰": "わたしはアレクサではありません",
+    "名前は": "内緒です",
+    "何歳": "え、わたし、何歳にみえますか",
+    "元気": "元気ですよー",
+    "好きな,色": "オレンジです",
+    "夢は": "世界を冒険することです",
+    "好きな,スポーツ": "けん玉です",
+    "好きな,食べ物": ["焼肉です",""],
+		"和歌山,天気": ["和歌山県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/30/"],
+    "大阪,天気": ["大阪府の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/27/"],
+    "京都,天気": ["京都府の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/26/"],
+    "奈良,天気": ["奈良県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/29/"],
+    "兵庫,天気": ["兵庫県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/28/"]
 };
 
 // ウエイクワードの定義
@@ -76,13 +80,31 @@ asr.onresult = function(event){
 
         if(new RegExp(wake_word).test(transcript_previous)){
             asr.abort(); // 音声認識を停止
-					let ret = response[transcript];
-	        let answer = response[transcript];
-
+						
+						let ret;
 						let answer;
             let webpage;
 						
-            if(typeof answer == 'undefined'){
+						let keys = Object.keys(response);
+            keys.forEach(function(key) {
+                let flag = true;
+                console.log(transcript);
+                key.split(',').forEach(function(word) {              
+                    let pattern = new RegExp(word);
+                    let flag_test = pattern.test(transcript); // マッチしたらtrue, しなかったらfalse
+                    flag = flag && flag_test; // 両方trueならtrue
+                    console.log(pattern + '+' + ':' + flag_test);
+                    //flag = flag && new RegExp(word).test(transcript);
+            });
+
+            if(flag){
+		        ret = response[key];
+                console.log(key + " : " + answer);
+            }
+        });
+						
+						
+            if(typeof ret == 'undefined'){
 	            answer = "ごめんなさい。わかりません。";
     	    }else{
 								answer = ret[0];
@@ -94,9 +116,9 @@ asr.onresult = function(event){
 	        // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	        tts.onend = function(event){
 	            asr.start(); // 音声認識を再開
-							if(typeof webpage != 'undefined’){
-									location.href = webpage;
-									} 
+							if(typeof webpage != 'undefined'){
+                open(webpage,"width=500,height=500"); // ページを移動
+              }   
 	        }
 
 	        speechSynthesis.speak(tts); // 再生
