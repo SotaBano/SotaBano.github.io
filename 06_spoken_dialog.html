@@ -143,7 +143,12 @@ asr.onresult = function(event){
 												output += transcript + ' => ' + answer + '<br>';
 												resultOutput.innerHTML = output;
 													speechSynthesis.speak(tts); // 再生
-											}
+											}else{
+												var myArray = ["ごめんなさい、よくわかりません。","ちょっと何言ってるか分からないなあ","それはわからん。"];
+												var rand = Math.random()*myArray.length | 0;
+												var rValue = myArray[rand];
+												output += transcript + " => " + rValue + '<br>';
+												tts.text = rValue;
 										}
 									}
 									// HTTPリクエストの実行
