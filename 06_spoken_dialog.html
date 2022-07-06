@@ -143,8 +143,6 @@ asr.onresult = function(event){
 												output += transcript + ' => ' + answer + '<br>';
 												resultOutput.innerHTML = output;
 													speechSynthesis.speak(tts); // 再生
-											}else{
-												asr.start();  // 音声認識を再開
 											}
 										}
 									}
