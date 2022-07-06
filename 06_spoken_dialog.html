@@ -139,6 +139,10 @@ asr.onresult = function(event){
 											if(res.result.method == "SAY"){
 												var answer = res.result.param_text_tts || res.result.param_text;
 												tts.text = answer;
+											
+												output += transcript + ' => ' + answer + '<br>';
+												resultOutput.innerHTML = output;
+													speechSynthesis.speak(tts); // 再生
 											}
 										}
 									}
@@ -152,8 +156,8 @@ asr.onresult = function(event){
 										answer = ret[0];
 										webpage = ret[1];
 								}
+								output += transcript + ' => ' + answer + '<br>';
 						}
-            output += transcript + ' => ' + answer + '<br>';
 
 	        tts.text = answer;
 	        // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
