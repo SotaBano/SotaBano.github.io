@@ -1,4 +1,4 @@
-<html lang="ja">
+ <html lang="ja">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -144,11 +144,12 @@ asr.onresult = function(event){
 												resultOutput.innerHTML = output;
 													speechSynthesis.speak(tts); // 再生
 											}
+										}
 									}
 									// HTTPリクエストの実行
 									request.send();
 
-    	    　　}else{
+    	    }else{
 								if(ret[1] == " "){
 								  answer = ret[0];
 								}else{
@@ -167,6 +168,8 @@ asr.onresult = function(event){
                 open(webpage,"width=500,height=500"); // ページを移動
               }   
 	        }
+
+	        speechSynthesis.speak(tts); // 再生
 					
         }
     } else { // 結果がまだ未確定のとき
