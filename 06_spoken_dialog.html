@@ -177,6 +177,7 @@ asr.onresult = function(event){
 											
 												output += transcript + ' => ' + answer + '<br>';
 												resultOutput.innerHTML = output;
+												speechSynthesis.speak(tts); // 再生
 											}else{
 													answer = "ごめんなさい。わかりません。";
 											}
@@ -205,8 +206,6 @@ asr.onresult = function(event){
                 open(webpage,"width=500,height=500"); // ページを移動
               }   
 	        }
-
-	        speechSynthesis.speak(tts); // 再生
 					
         }
     } else { // 結果がまだ未確定のとき
