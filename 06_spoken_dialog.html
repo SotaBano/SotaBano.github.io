@@ -36,8 +36,8 @@ background: #99ccff;
 </head>
 <body>
 
-<h1>音声認識課題</h1>
-<h3>OKコンピュータといった後に、話しかけてみてね</h3>
+<h1>音声認識MAP君</h1>
+<h3>近くの施設や建物の場所を聞いてみよう！また行き方も聞くと答えてくれるよ！</h3>
 
 <p>
 <button id="startButton">start</button>
@@ -49,6 +49,7 @@ background: #99ccff;
 </p>
 
 <script>
+
 // 応答の定義（ハッシュ）    
 var response = {
     "あなた,誰": ["わたしはアレクサではありません", " "],
@@ -66,21 +67,29 @@ var response = {
     "夢は": ["世界を冒険することです", " "],
     "好きな,スポーツ": ["けん玉です", " "],
     "好きな,食べ物": ["焼肉です", " "],
-		"好きな,数字": ["９９です。", " "],
-		"好きな,人": ["かわいい人がタイプです。", " "],
+		"好きな,数字": ["９９です", " "],
+		"好きな,人": ["かわいい人がタイプです", " "],
 		"趣味": ["よく走っています。", " "],
-		"好きな,アニメ": ["アニメより漫画派です。", " "],
-		"暇": ["おねんねしましょう。", " "],
+		"好きな,アニメ": ["アニメより漫画派です", " "],
+		"暇": ["おねんねしましょう", " "],
 		"嫌い": ["私に嫌いなものはないです", " "],
 		"和歌山,天気": ["和歌山県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/30/"],
     "大阪,天気": ["大阪府の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/27/"],
     "京都,天気": ["京都府の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/26/"],
     "奈良,天気": ["奈良県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/29/"],
-    "兵庫,天気": ["兵庫県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/28/"]
+    "兵庫,天気": ["兵庫県の天気予報を表示します", "https://weather.yahoo.co.jp/weather/jp/28/"],
+		"近くの": ["googleマップで表示します。しばしお待ちを。", "https://www.google.com/maps/search/"],
+		"の場所": ["googleマップで表示します。しばしお待ちを。", "https://www.google.com/maps/search/"],
+		"行き方": ["googleマップで表示します。しばしお待ちを。", "https://www.google.com/maps/search/"],
+		"経路": ["googleマップで表示します。しばしお待ちを。", "https://www.google.com/maps/search/"],
+		"検索" : ["googleで検索します。しばしお待ちを。", "https://www.google.com/search?q="],
+		"今日,何の日": ["お任せください、表示します", "https://kids.yahoo.co.jp/today/"],
+		"今日,日付": ["お任せください、表示します", "https://kids.yahoo.co.jp/today/"],
+		"今日,日にち": ["お任せください、表示します", "https://kids.yahoo.co.jp/today/"],
+		"今日,何曜日": ["お任せください、表示します", "https://kids.yahoo.co.jp/today/"],
+		"今日,何日": ["お任せください、表示します", "https://kids.yahoo.co.jp/today/"]
 };
 
-// ウエイクワードの定義
-var wake_word = "OK.*コンピューター";
 
 const URL = "https://jlp.yahooapis.jp/NLUService/V1/analyze?appid="; // APIのリクエストURL
 const APIID = "dj00aiZpPTRKclR5azFyUDN5dyZzPWNvbnN1bWVyc2VjcmV0Jng9Nzg-"; // あなたのアプリケーションID
@@ -111,6 +120,15 @@ asr.continuous = true; // 継続入力をオン
 
 let output = ''; // 出力
 
+window.onload = function() {
+		let guide;
+		guide = "私はマップのように使うことができます。近くの施設や、建物の場所を表示したり、目的地までの経路を表示します。また、簡単な質問には答えられるので気軽に話しかけてくださいね！";
+		tts.text = guide;
+		output = guide;
+		speechSynthesis.speak(tts); // 再生
+};
+
+
 // 認識結果が出力されたときのイベントハンドラ
 asr.onresult = function(event){
     let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
@@ -122,8 +140,7 @@ asr.onresult = function(event){
 
     let output_not_final = '';
     if(event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
-
-        if(new RegExp(wake_word).test(transcript_previous)){
+		
             asr.abort(); // 音声認識を停止
 						
 						let ret;
@@ -180,6 +197,10 @@ asr.onresult = function(event){
 												speechSynthesis.speak(tts); // 再生
 											}else{
 													answer = "ごめんなさい。わかりません。";
+													tts.text = answer;
+													output += transcript + ' => ' + answer + '<br>';
+													resultOutput.innerHTML = output;
+													speechSynthesis.speak(tts); // 再生
 											}
 										}
 									}
@@ -189,12 +210,28 @@ asr.onresult = function(event){
     	    }else{
 								if(ret[1] == " "){
 								  answer = ret[0];
+									output += transcript + ' => ' + answer + '<br>';
+									tts.text = answer;
+									speechSynthesis.speak(tts); // 再生
 								}else{
 										answer = ret[0];
-										webpage = ret[1];
+										if(transcript.indexOf("近くの") !== -1　|| transcript.indexOf("の場所") !== -1　|| transcript.indexOf("行き方") !== -1　|| transcript.indexOf("経路") !== -1){
+												webpage = ret[1] + transcript;
+												output += transcript + ' => ' + answer + '<br>';
+												tts.text = answer;
+												speechSynthesis.speak(tts); // 再生
+										}else if(transcript.indexOf("検索")　!== -1) {
+												webpage = ret[1] + transcript.replace("で検索して", "");
+												output += transcript + ' => ' + answer + '<br>';
+												tts.text = answer;
+												speechSynthesis.speak(tts); // 再生
+										}else{
+												webpage = ret[1];
+												output += transcript + ' => ' + answer + '<br>';
+												tts.text = answer;
+												speechSynthesis.speak(tts); // 再生
+										}
 								}
-								output += transcript + ' => ' + answer + '<br>';
-								speechSynthesis.speak(tts); // 再生
 						}
 
 	        tts.text = answer;
@@ -207,7 +244,6 @@ asr.onresult = function(event){
               }   
 	        }
 					
-        }
     } else { // 結果がまだ未確定のとき
         output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
     }
@@ -216,7 +252,7 @@ asr.onresult = function(event){
 
 // 開始ボタンのイベントハンドラ
 startButton.addEventListener('click', function() {
-    asr.start();
+		asr.start();
 })
 
 // 停止ボタンのイベントハンドラ
@@ -225,6 +261,8 @@ stopButton.addEventListener('click', function() {
     asr.stop();
 })
 </script>
-
+<p>
+Web Services by Yahoo! JAPAN （https://developer.yahoo.co.jp/about）
+</p>
 </body>
 </html>
