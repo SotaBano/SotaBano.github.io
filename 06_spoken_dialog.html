@@ -48,6 +48,10 @@ background: #99ccff;
 <div id="resultOutput"></div>
 </p>
 
+<textarea id="status" cols="100" rows="1">
+</textarea>
+<br>
+
 <script>
 
 // 応答の定義（ハッシュ）    
@@ -128,6 +132,12 @@ window.onload = function() {
 		speechSynthesis.speak(tts); // 再生
 };
 
+tts.onsoundstart = function(){
+  document.getElementById('status').innerHTML = "認識中";
+};
+tts.onsoundend = function(){
+  document.getElementById('status').innerHTML = "停止中";
+};
 
 // 認識結果が出力されたときのイベントハンドラ
 asr.onresult = function(event){
@@ -196,9 +206,10 @@ asr.onresult = function(event){
 												resultOutput.innerHTML = output;
 												speechSynthesis.speak(tts); // 再生
 											}else{
-													answer = "ごめんなさい。わかりません。";
-													tts.text = answer;
-													output += transcript + ' => ' + answer + '<br>';
+													const und = ['ごめんなさい、今日が何の日なのかはお応えできるのですが…', '私には近くの施設などを聞いてくださいよ～。', 'ちょっと何言ってるかわからんから出直してきて。', 'ごめんなさい、理解できないので代わりに私の好きな言葉を答えます。本日全品30％オフでーす！です。','すみません、初めにも言ったように私は地図の代わりとして使ってください。', 'すみません、違う質問をしてください。ユニバへの行き方とか。'];
+													const undNo = Math.floor( Math.random() * und.length);
+													tts.text = und[undNo];
+													output += transcript + ' => ' + und[undNo] + '<br>';
 													resultOutput.innerHTML = output;
 													speechSynthesis.speak(tts); // 再生
 											}
