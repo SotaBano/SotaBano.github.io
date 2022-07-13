@@ -48,9 +48,6 @@ background: #99ccff;
 <div id="resultOutput"></div>
 </p>
 
-<textarea id="status" cols="100" rows="1">
-</textarea>
-<br>
 
 <script>
 
@@ -124,20 +121,6 @@ asr.continuous = true; // 継続入力をオン
 
 let output = ''; // 出力
 
-window.onload = function() {
-		let guide;
-		guide = "私はマップのように使うことができます。近くの施設や、建物の場所を表示したり、目的地までの経路を表示します。また、簡単な質問には答えられるので気軽に話しかけてくださいね！";
-		tts.text = guide;
-		output = guide;
-		speechSynthesis.speak(tts); // 再生
-};
-
-tts.onsoundstart = function(){
-  document.getElementById('status').innerHTML = "認識中";
-};
-tts.onsoundend = function(){
-  document.getElementById('status').innerHTML = "停止中";
-};
 
 // 認識結果が出力されたときのイベントハンドラ
 asr.onresult = function(event){
@@ -263,6 +246,14 @@ asr.onresult = function(event){
 
 // 開始ボタンのイベントハンドラ
 startButton.addEventListener('click', function() {
+		let guide;
+		guide = "私はマップのように使うことができます。近くの施設や、建物の場所を表示したり、目的地までの経路を表示します。また、簡単な質問には答えられるので気軽に話しかけてくださいね！";
+		tts.text = guide;
+		output = guide;
+		speechSynthesis.speak(tts); // 再生
+		asr.abort();
+		asr.stop();
+		
 		asr.start();
 })
 
